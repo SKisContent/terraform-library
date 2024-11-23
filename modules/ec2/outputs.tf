@@ -1,3 +1,3 @@
-output "subnets" {
-  value = data.aws_subnets.default
+output "instance_ids" {
+  value = aws_instance.default.id
 }

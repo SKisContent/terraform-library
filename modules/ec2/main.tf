@@ -7,7 +7,7 @@ data "aws_ami" "amazon" {
 
   filter {
     name   = "name"
-    values = ["al2023-ami-*"]
+    values = ["al2023-ami-2023*"]
   }
 
   filter {
@@ -59,7 +59,7 @@ resource "aws_security_group" "instance" {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = [data.aws_vpc.instance.cidr_block]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {

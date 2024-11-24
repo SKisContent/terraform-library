@@ -29,29 +29,30 @@ data "aws_subnets" "default" {
   }
 }
 
+data "aws_security_group" "default" {
+  vpc_id = local.vpc_id
+  filter {
+    name   = "group-name"
+    values = ["default"]
+  }
+}
+
 locals {
   vpc_id    = var.vpc_id != null ? var.vpc_id : data.aws_vpc.default.id
   ami       = var.ami != null ? var.ami : data.aws_ami.amazon.id
   subnet_id = var.subnet_id != null ? var.subnet_id : data.aws_subnets.default.ids[0]
 }
 
-resource "aws_security_group" "default" {
+resource "aws_security_group" "instance" {
   name        = var.instance_name
   description = "Security group for the ${var.instance_name} instance"
   vpc_id      = local.vpc_id
 
   ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "TCP"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "TCP"
-    cidr_blocks = ["0.0.0.0/0"]
+    from_port       = 0
+    to_port         = 0
+    protocol        = "-1"
+    security_groups = [data.aws_security_group.default.id]
   }
 
   egress {
@@ -94,7 +95,7 @@ resource "aws_iam_role" "instance" {
 }
 
 # Create the instance
-resource "aws_instance" "default" {
+resource "aws_instance" "instance" {
   ami                         = local.ami
   subnet_id                   = local.subnet_id
   instance_type               = var.instance_type
@@ -106,7 +107,7 @@ resource "aws_instance" "default" {
     http_endpoint = "enabled"
     http_tokens   = "required"
   }
-  vpc_security_group_ids = [aws_security_group.default.id]
+  vpc_security_group_ids = [aws_security_group.instance.id]
 
   root_block_device {
     volume_size = 30

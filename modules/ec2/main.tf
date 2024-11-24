@@ -22,6 +22,13 @@ data "aws_ami" "amazon" {
   owners = ["amazon"]
 }
 
+data "aws_vpc" "instance" {
+  filter {
+    name   = "vpc-id"
+    values = [local.vpc_id]
+  }
+}
+
 data "aws_subnets" "default" {
   filter {
     name   = "vpc-id"
@@ -49,10 +56,10 @@ resource "aws_security_group" "instance" {
   vpc_id      = local.vpc_id
 
   ingress {
-    from_port       = 0
-    to_port         = 0
-    protocol        = "-1"
-    security_groups = [data.aws_security_group.default.id]
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = [data.aws_vpc.instance.cidr_block]
   }
 
   egress {

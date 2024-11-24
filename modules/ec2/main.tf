@@ -99,6 +99,7 @@ resource "aws_instance" "instance" {
   ami                         = local.ami
   subnet_id                   = local.subnet_id
   instance_type               = var.instance_type
+  iam_instance_profile        = aws_iam_instance_profile.default.name
   key_name                    = var.key_name
   associate_public_ip_address = var.associate_public
   user_data                   = var.user_data

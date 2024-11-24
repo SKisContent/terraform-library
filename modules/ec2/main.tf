@@ -115,6 +115,9 @@ resource "aws_instance" "instance" {
   key_name                    = var.key_name
   associate_public_ip_address = var.associate_public
   user_data                   = var.user_data
+  private_dns_name_options {
+    enable_resource_name_dns_a_record = true
+  }
 
   metadata_options {
     http_endpoint = "enabled"

@@ -101,6 +101,11 @@ resource "aws_iam_role" "instance" {
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
 }
 
+resource "aws_iam_role_policy_attachment" "instance" {
+  role       = aws_iam_role.instance.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
 # Create the instance
 resource "aws_instance" "instance" {
   ami                         = local.ami
